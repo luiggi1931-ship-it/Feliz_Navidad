@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feliz Navidad 🎄</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎄</text></svg>">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Mountains+of+Christmas:wght@700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        /* --- CONFIGURACIÓN BÁSICA Y RESET --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden; 
+            height: 100vh;
+            width: 100vw;
+        }
+
+        /* --- EFECTO DE NIEVE --- */
+        .snowflake {
+            position: fixed;
+            top: -20px;
+            color: white; 
+            font-size: 1em; 
+            pointer-events: none; 
+            z-index: 100; 
+            opacity: 0.9;
+            animation: fall linear infinite;
+            text-shadow: 0 0 3px rgba(255, 255, 255, 0.8); 
+            user-select: none;
+        }
+
+        @keyframes fall {
+            to { transform: translateY(110vh) rotate(360deg); } 
+        }
+
+        /* --- ESCENA 1: EL SOBRE --- */
+        #scene-1 {
+            background: linear-gradient(135deg, #2c3e50, #000000);
+            height: 100%;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 20;
+            transition: opacity 2.5s ease; 
+        }
+
+        .envelope-container {
+            position: relative;
+            width: 300px;
+            height: 200px;
+            background: #c0392b; 
+            border-radius: 0 0 10px 10px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            display: flex;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.3s;
+            z-index: 21; 
+        }
+
+        .envelope-container:hover { transform: scale(1.02); }
+
+        .envelope-flap {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 0;
+            border-left: 150px solid transparent;
+            border-right: 150px solid transparent;
+            border-top: 110px solid #e74c3c; 
+            transform-origin: top;
+            transition: transform 0.8s ease-in-out, z-index 0.8s; 
+            z-index: 5;
+        }
+
+        .envelope-container.open .envelope-flap {
+            transform: rotateX(180deg);
+            z-index: 1; 
+        }
+
+        .envelope-pocket {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 0;
+            border-left: 150px solid #c0392b;
+            border-right: 150px solid #c0392b;
+            border-bottom: 100px solid #a93226; 
+            border-top: 100px solid transparent;
+            border-radius: 0 0 10px 10px;
+            z-index: 4;
+            pointer-events: none;
+        }
+
+        .btn-open {
+            position: absolute;
+            top: 30px; 
+            left: 50%; 
+            transform: translateX(-50%); 
+            padding: 8px 20px;
+            font-size: 1.1rem;
+            background: #f1c40f; 
+            color: #8e44ad; 
+            border: 2px solid #f39c12;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            text-transform: uppercase;
+            font-weight: bold;
+            z-index: 10;
+            transition: all 0.5s;
+            font-family: 'Mountains of Christmas', cursive;
+            white-space: nowrap; 
+        }
+
+        .btn-open:hover { transform: translateX(-50%) scale(1.1); box-shadow: 0 0 15px #f1c40f; }
+
+        .btn-open.hidden { opacity: 0; pointer-events: none; transform: translateX(-50%) scale(0); }
+
+        /* --- ESCENA 2: ÁRBOL Y CIELO --- */
+        #scene-2 {
+            background: radial-gradient(circle at bottom, #1b2735 0%, #090a0f 100%);
+            height: 100%;
+            width: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            opacity: 0; 
+            pointer-events: none; 
+            transition: opacity 3s ease; 
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: center;
+            padding-bottom: 60px;
+        }
+
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            opacity: 0.8;
+            animation: twinkle var(--duration) infinite ease-in-out;
+            z-index: 1;
+        }
+
+        .christmas-title {
+            font-family: 'Mountains of Christmas', cursive;
+            font-size: 4rem;
+            text-align: center;
+            margin-bottom: 10px;
+            min-height: 80px;
+            opacity: 0;
+            transition: opacity 1.5s; 
+            z-index: 50; 
+        }
+
+        /* --- ANIMACIONES GENERALES --- */
+        @keyframes christmasLightsText {
+            0% { color: #ff3333; text-shadow: 0 0 10px #ff0000; }
+            33% { color: #33ff33; text-shadow: 0 0 10px #00ff00; }
+            66% { color: #ffd700; text-shadow: 0 0 10px #ffd700; }
+            100% { color: #ff3333; text-shadow: 0 0 10px #ff0000; }
+        }
+
+        @keyframes christmasLightsBG {
+            0% { background-color: #ff3333; box-shadow: 0 0 10px #ff0000; }
+            33% { background-color: #33ff33; box-shadow: 0 0 10px #00ff00; }
+            66% { background-color: #ffd700; box-shadow: 0 0 10px #ffd700; }
+            100% { background-color: #3498db; box-shadow: 0 0 10px #3498db; }
+        }
+        
+        @keyframes redPulse {
+            0% { box-shadow: 0 0 5px #ff0000; transform: scale(1); }
+            100% { box-shadow: 0 0 25px #ff0000, 0 0 10px #ffcccc; transform: scale(1.15); }
+        }
+
+        @keyframes twinkle { 0%, 100% { opacity: 0.3; transform: scale(0.8); } 50% { opacity: 1; transform: scale(1.2); } }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+        @keyframes glow { from { text-shadow: 0 0 10px #f1c40f, 0 0 20px #f1c40f; } to { text-shadow: 0 0 20px #f1c40f, 0 0 40px #f39c12; } }
+        @keyframes popIn { from { transform: scale(0); } to { transform: scale(1); } }
+
+        .lights-active { opacity: 1; animation: christmasLightsText 2s infinite linear; }
+        .hidden { opacity: 0 !important; pointer-events: none !important; }
+        .visible { opacity: 1 !important; pointer-events: all !important; }
+
+        /* --- ESTRUCTURA DEL ÁRBOL --- */
+        .tree-container {
+            position: relative;
+            width: 350px;
+            height: 600px; 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end; 
+            z-index: 10;
+        }
+
+        .tree-part { 
+            opacity: 0; 
+            transform: translateX(-50%) translateY(50px) scale(0.8); 
+            transition: all 1.2s cubic-bezier(0.34, 1.56, 0.64, 1); 
+        }
+        .tree-part.built { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
+
+        .star-top {
+            position: absolute;
+            top: -10px; left: 50%;
+            transform: translateX(-50%) translateY(-30px) scale(0); 
+            font-size: 55px; color: #f1c40f; filter: drop-shadow(0 0 15px #f1c40f);
+            z-index: 20; opacity: 0;
+            transition: all 1.5s cubic-bezier(0.34, 1.56, 0.64, 1); 
+        }
+        .star-top.built { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); animation: glow 2s infinite alternate 0.8s; }
+
+        .tree-layer {
+            position: absolute; left: 50%;
+            background: linear-gradient(135deg, #2ecc71 0%, #27ae60 50%, #1e8449 100%); 
+            clip-path: polygon(50% 0%, 0% 100%, 100% 100%); 
+            filter: drop-shadow(0 5px 5px rgba(0,0,0,0.3)); border-radius: 10px; 
+        }
+
+        .layer-1 { width: 140px; height: 120px; top: 20px; z-index: 5; } 
+        .layer-2 { width: 200px; height: 160px; top: 80px; z-index: 4; } 
+        .layer-3 { width: 260px; height: 200px; top: 160px; z-index: 3; } 
+        .layer-4 { width: 320px; height: 220px; top: 260px; z-index: 2; } 
+
+        .trunk {
+            width: 50px; height: 100px; 
+            background: linear-gradient(to right, #5d4037, #3e2723, #5d4037);
+            border-radius: 5px; z-index: 1; 
+            position: absolute; bottom: 30px; left: 50%;
+        }
+        
+        .pot {
+            width: 80px; height: 60px;
+            background: linear-gradient(to right, #c0392b, #922b21, #c0392b);
+            position: absolute; bottom: 0; z-index: 1;
+            clip-path: polygon(10% 100%, 0 0, 100% 0, 90% 100%);
+            left: 50%;
+        }
+
+        /* --- ADORNOS Y ESFERAS --- */
+        .ornament {
+            position: absolute; 
+            width: 30px; 
+            height: 30px; 
+            border-radius: 50%;
+            background-color: white; 
+            cursor: pointer; 
+            z-index: 10;
+            transform: scale(0); 
+            opacity: 0; 
+            transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            /* Para centrar el número */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #00008b; /* Azul Oscuro */
+            font-weight: bold;
+            font-size: 14px;
+            font-family: 'Segoe UI', sans-serif;
+        }
+        
+        .ornament.deco { 
+            cursor: default; 
+            width: 22px; 
+            height: 22px; 
+            box-shadow: 1px 1px 3px rgba(0,0,0,0.3); 
+            animation: christmasLightsBG 4s infinite alternate-reverse; 
+            /* Sin texto en las decorativas */
+            color: transparent; 
+        }
+
+        /* Estilo para las esferas principales (1-10) */
+        .ornament:not(.deco) {
+            background: radial-gradient(circle at 30% 30%, #ff9a9e, #d60000); 
+            box-shadow: 0 0 10px rgba(255, 0, 0, 0.5); 
+        }
+
+        .ornament:not(.deco).visible { 
+            transform: scale(1); 
+            opacity: 1; 
+            animation: redPulse 1.5s infinite ease-in-out; 
+        }
+        
+        .ornament:not(.deco):hover { 
+            transform: scale(1.4) !important; 
+            z-index: 15; 
+            filter: brightness(1.2); 
+            cursor: pointer; 
+        }
+        
+        .ornament.deco.visible { transform: scale(1); opacity: 1; }
+
+        /* Posiciones Esferas 1-10 (De abajo hacia arriba) */
+        /* Nivel 1 (Base - Layer 4) */
+        #ornament-1 { top: 420px; left: 50px; animation-delay: 0s; }
+        #ornament-2 { top: 440px; left: 120px; animation-delay: 0.2s; }
+        #ornament-3 { top: 440px; left: 200px; animation-delay: 0.4s; }
+        #ornament-4 { top: 420px; left: 270px; animation-delay: 0.6s; }
+        
+        /* Nivel 2 (Medio Bajo - Layer 3) */
+        #ornament-5 { top: 330px; left: 80px; animation-delay: 0.8s; }
+        #ornament-6 { top: 350px; left: 160px; animation-delay: 1.0s; }
+        #ornament-7 { top: 330px; left: 240px; animation-delay: 1.2s; }
+        
+        /* Nivel 3 (Medio Alto - Layer 2) */
+        #ornament-8 { top: 230px; left: 110px; animation-delay: 1.4s; }
+        #ornament-9 { top: 230px; left: 210px; animation-delay: 1.6s; }
+        
+        /* Nivel 4 (Cima - Layer 1) */
+        #ornament-10 { top: 130px; left: 160px; animation-delay: 1.8s; }
+
+        .tree-light { position: absolute; width: 8px; height: 8px; border-radius: 50%; background: white; z-index: 6; animation: christmasLightsBG 1.5s infinite alternate; box-shadow: 0 0 5px rgba(255,255,255,0.8); opacity: 0; transition: opacity 2s; }
+        .tree-light.on { opacity: 1; }
+
+        /* --- FUEGOS ARTIFICIALES --- */
+        .btn-fireworks { position: absolute; bottom: 20px; right: 20px; background: #e67e22; color: white; border: none; padding: 12px 20px; border-radius: 30px; cursor: pointer; font-weight: bold; box-shadow: 0 4px 10px rgba(230, 126, 34, 0.5); z-index: 100; transition: transform 0.2s, background 0.2s; display: none; }
+        .btn-fireworks:hover { transform: scale(1.1); background: #d35400; }
+        .btn-fireworks.visible { display: block; animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .firework-particle { position: absolute; width: 6px; height: 6px; border-radius: 50%; pointer-events: none; z-index: 40; }
+
+        /* --- MODAL (POPUP) --- */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(5px); display: flex; justify-content: center; align-items: center; z-index: 200; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
+        .modal-overlay.active { opacity: 1; pointer-events: all; }
+        .modal-content { background: white; padding: 25px; border-radius: 15px; text-align: center; max-width: 90%; width: 400px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); transform: scale(0.8); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); border: 4px solid #c0392b; display: flex; flex-direction: column; gap: 15px; }
+        .modal-overlay.active .modal-content { transform: scale(1); }
+        .modal-text { font-size: 1.1rem; color: #333; margin: 0; line-height: 1.5; min-height: 60px; display: flex; align-items: center; justify-content: center; }
+        .modal-close { background: #e74c3c; color: white; border: none; padding: 10px 15px; border-radius: 20px; cursor: pointer; font-size: 0.9rem; transition: background 0.2s; width: 100%; font-weight: bold; }
+        .modal-close:hover { background: #c0392b; }
+
+        /* --- BOTÓN DE MÚSICA --- */
+        .music-btn { position: fixed; top: 20px; right: 20px; background: rgba(255, 255, 255, 0.2); color: white; border: 1px solid rgba(255, 255, 255, 0.5); padding: 10px; border-radius: 50%; width: 45px; height: 45px; cursor: pointer; z-index: 1000; transition: all 0.3s; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; }
+        .music-btn:hover { background: rgba(255, 255, 255, 0.4); transform: scale(1.1); }
+        .music-btn.playing { color: #f1c40f; border-color: #f1c40f; animation: pulse 2s infinite; }
+
+        /* --- RESPONSIVE --- */
+        @media (max-width: 400px) {
+            .tree-container { transform: scale(0.70); transform-origin: bottom center; } 
+            .christmas-title { font-size: 2.5rem; }
+            #scene-2 { padding-bottom: 40px; }
+            .btn-fireworks { bottom: 10px; right: 10px; padding: 10px 15px; font-size: 0.9rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- REPRODUCTOR DE AUDIO -->
+    <audio id="bgMusic" loop preload="auto">
+        <source src="musica.mp3" type="audio/mp3">
+        Tu navegador no soporta audio.
+    </audio>
+
+    <!-- BOTONES PRINCIPALES -->
+    <button id="musicBtn" class="music-btn" onclick="toggleMusic()">
+        <i class="fas fa-play"></i>
+    </button>
+
+    <!-- ESCENA 1 (EL SOBRE) -->
+    <div id="scene-1">
+        <div class="envelope-container" onclick="startExperience()">
+            <div class="envelope-flap"></div>
+            <div class="envelope-pocket"></div>
+            <button class="btn-open" id="openBtn">Abrir 🎁</button>
+        </div>
+    </div>
+
+    <!-- ESCENA 2 (EL ÁRBOL) -->
+    <div id="scene-2">
+        <h1 id="navidad-title" class="christmas-title"></h1>
+
+        <div class="tree-container" id="treeContainer">
+            <div class="star-top" id="starTop">★</div>
+            <div class="trunk tree-part" id="part-trunk"></div>
+            <div class="pot tree-part" id="part-pot"></div>
+            <div class="tree-layer layer-1 tree-part" id="part-layer1"></div>
+            <div class="tree-layer layer-2 tree-part" id="part-layer2"></div>
+            <div class="tree-layer layer-3 tree-part" id="part-layer3"></div>
+            <div class="tree-layer layer-4 tree-part" id="part-layer4"></div>
+            
+            <!-- ESFERAS NUMERADAS (1-10 de Abajo hacia Arriba) -->
+            <div class="ornament" id="ornament-1" onclick="showMessage(1)">1</div>
+            <div class="ornament" id="ornament-2" onclick="showMessage(2)">2</div>
+            <div class="ornament" id="ornament-3" onclick="showMessage(3)">3</div>
+            <div class="ornament" id="ornament-4" onclick="showMessage(4)">4</div>
+            <div class="ornament" id="ornament-5" onclick="showMessage(5)">5</div>
+            <div class="ornament" id="ornament-6" onclick="showMessage(6)">6</div>
+            <div class="ornament" id="ornament-7" onclick="showMessage(7)">7</div>
+            <div class="ornament" id="ornament-8" onclick="showMessage(8)">8</div>
+            <div class="ornament" id="ornament-9" onclick="showMessage(9)">9</div>
+            <div class="ornament" id="ornament-10" onclick="showMessage(10)">10</div>
+        </div>
+
+        <button id="fireworksBtn" class="btn-fireworks" onclick="launchFireworks()">Lanzar Pirotecnia 🎆</button>
+    </div>
+
+    <!-- MODAL DE MENSAJES -->
+    <div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+        <div class="modal-content">
+            <h2 style="color: #c0392b; margin: 0;">¡Sorpresa! 🎄</h2>
+            <p class="modal-text" id="modalText">Mensaje aquí...</p>
+            <button class="modal-close" onclick="closeModalBtn()">Cerrar</button>
+        </div>
+    </div>
+
+    <script>
+        // --- MENSAJES DE LAS ESFERAS ---
+        const messages = {
+            1: "A veces las cosas más simples son las que más bonito se sienten. Me alegra haberte conocido, Fri. 🎅",
+            2: "Aunque estemos en lugares distintos, me gusta cuando coincidimos y hablamos con buena vibra. 😊",
+            3: "Contigo las conversaciones tienen algo especial, incluso cuando son cortitas.😄",
+            4: "Tienes una forma muy tuya de brillar. Nunca dejes de ser así. ✨",
+            5: "Me gusta tu manera de ser, tu estilo y esa energía tranquila que transmites. 🌟",
+            6: "Hice esto pensando en ti, con cariño navideño.🎁",
+            7: "Que esta Navidad te traiga momentos lindos y paz en el corazón. ❄️",
+            8: "Ojalá hoy y estos días estén llenos de cosas que te hagan sentir bien.🎉",
+            9: "A veces no se trata de entender todo, sino de disfrutar el momento.🙏",
+            10: "Solo quería dejarte este detalle hecho con cariño y un poco de código 😄. ¡Feliz Navidad, Fri! 🎄✨"
+        };
+
+        // --- LÓGICA DE AUDIO ---
+        const bgMusic = document.getElementById('bgMusic');
+        const musicBtn = document.getElementById('musicBtn');
+        let isMusicPlaying = false;
+
+        bgMusic.addEventListener('error', function(e) {
+            console.error("Error cargando el audio:", e);
+            alert("No se pudo cargar la música. Asegúrate de que 'musica.mp3' está en la carpeta.");
+        });
+
+        function toggleMusic() {
+            if (isMusicPlaying) {
+                bgMusic.pause();
+                musicBtn.classList.remove('playing');
+                musicBtn.innerHTML = '<i class="fas fa-play"></i>'; 
+                isMusicPlaying = false;
+            } else {
+                const playPromise = bgMusic.play();
+                if (playPromise !== undefined) {
+                    playPromise.then(() => {
+                        musicBtn.classList.add('playing');
+                        musicBtn.innerHTML = '<i class="fas fa-pause"></i>'; 
+                        isMusicPlaying = true;
+                    }).catch(error => {
+                        console.error("Error al reproducir audio:", error);
+                        musicBtn.innerHTML = '<i class="fas fa-play"></i>';
+                        alert("No se pudo reproducir la música. Verifica el archivo.");
+                    });
+                }
+            }
+        }
+
+        // --- LÓGICA DE NIEVE ---
+        function createSnow() {
+            const snowCount = 50; 
+            for(let i=0; i<snowCount; i++) {
+                const snowflake = document.createElement('div');
+                snowflake.classList.add('snowflake');
+                snowflake.textContent = '❄'; 
+                
+                snowflake.style.left = Math.random() * 100 + 'vw';
+                const fontSize = Math.random() * 1.5 + 0.5; 
+                snowflake.style.fontSize = fontSize + 'em';
+                
+                const duration = Math.random() * 5 + 5; 
+                snowflake.style.animationDuration = duration + 's';
+                snowflake.style.animationDelay = Math.random() * 5 + 's';
+                snowflake.style.opacity = Math.random();
+
+                document.body.appendChild(snowflake);
+            }
+        }
+
+        // --- TRANSICIÓN DE ESCENAS ---
+        function startExperience() {
+            toggleMusic(); 
+
+            const scene1 = document.getElementById('scene-1');
+            const scene2 = document.getElementById('scene-2');
+            const envelope = document.querySelector('.envelope-container');
+            const btnOpen = document.getElementById('openBtn');
+
+            btnOpen.classList.add('hidden'); 
+            envelope.classList.add('open');  
+
+            setTimeout(() => {
+                scene1.style.opacity = '0'; 
+                setTimeout(() => {
+                    scene1.classList.add('hidden');
+                    scene2.classList.add('visible');
+                    createStars();
+                    setTimeout(buildTreeSequence, 1000); 
+                }, 2500); 
+            }, 800); 
+        }
+
+        // --- ANIMACIÓN CONSTRUCCIÓN ÁRBOL ---
+        function buildTreeSequence() {
+            document.getElementById('part-pot').classList.add('built');
+            setTimeout(() => document.getElementById('part-trunk').classList.add('built'), 800);
+            
+            setTimeout(() => document.getElementById('part-layer4').classList.add('built'), 1800);
+            setTimeout(() => document.getElementById('part-layer3').classList.add('built'), 2800);
+            setTimeout(() => document.getElementById('part-layer2').classList.add('built'), 3800);
+            setTimeout(() => document.getElementById('part-layer1').classList.add('built'), 4800);
+            
+            setTimeout(() => document.getElementById('starTop').classList.add('built'), 6000);
+            
+            setTimeout(startChristmasMagic, 8000);
+        }
+
+        // --- MAGIA FINAL (LUCES Y TEXTO) ---
+        function startChristmasMagic() {
+            const titleElement = document.getElementById('navidad-title');
+            const btnFireworks = document.getElementById('fireworksBtn');
+            titleElement.classList.add('lights-active');
+            typeText("¡Feliz Navidad!", titleElement, 200); 
+            
+            setTimeout(() => {
+                showOrnaments();
+                addDecoOrnaments(); 
+                addLightsToTree(); 
+                btnFireworks.classList.add('visible'); 
+            }, 3000); 
+        }
+
+        function showOrnaments() {
+            const ornaments = document.querySelectorAll('.ornament:not(.deco)'); 
+            ornaments.forEach((orb, index) => {
+                setTimeout(() => {
+                    orb.classList.add('visible');
+                }, index * 400); 
+            });
+        }
+
+        function addDecoOrnaments() {
+            const treeContainer = document.getElementById('treeContainer');
+            const positions = [
+                { top: 90, x: -40 }, { top: 150, x: 50 }, 
+                { top: 210, x: -70 }, { top: 220, x: 20 },
+                { top: 270, x: -100 }, { top: 290, x: 60 },
+                { top: 330, x: -40 }, { top: 340, x: 90 },
+                { top: 350, x: -120 }, { top: 370, x: 0 },
+                { top: 380, x: 130 }, { top: 250, x: 100 },
+                { top: 410, x: -60 }, { top: 430, x: 80 }
+            ];
+            positions.forEach((pos, i) => {
+                const orb = document.createElement('div');
+                orb.classList.add('ornament', 'deco'); 
+                orb.style.top = pos.top + 'px';
+                orb.style.left = `calc(50% + ${pos.x}px)`;
+                orb.style.animationDelay = Math.random() * 2 + 's';
+                treeContainer.appendChild(orb);
+                setTimeout(() => { orb.classList.add('visible'); }, i * 300); 
+            });
+        }
+
+        function addLightsToTree() {
+            const treeContainer = document.getElementById('treeContainer');
+            for(let i=0; i<70; i++) {
+                const light = document.createElement('div');
+                light.classList.add('tree-light');
+                const randomTop = Math.random() * 440 + 30; 
+                const maxSpread = (randomTop / 500) * 160; 
+                const randomLeftOffset = (Math.random() - 0.5) * 2 * maxSpread; 
+                light.style.top = `${randomTop}px`;
+                light.style.left = `calc(50% + ${randomLeftOffset}px)`;
+                light.style.animationDelay = Math.random() * 2 + 's';
+                treeContainer.appendChild(light);
+                setTimeout(() => light.classList.add('on'), Math.random() * 3000); 
+            }
+        }
+
+        // --- FUEGOS ARTIFICIALES ---
+        function launchFireworks() {
+            const scene2 = document.getElementById('scene-2');
+            const colors = ['#ff3333', '#33ff33', '#ffd700', '#3498db', '#e67e22', '#9b59b6'];
+            for(let i=0; i<5; i++) {
+                setTimeout(() => {
+                    const startX = Math.random() * 80 + 10; 
+                    createRocket(scene2, startX, colors[Math.floor(Math.random() * colors.length)]);
+                }, i * 300);
+            }
+        }
+
+        function createRocket(container, x, color) {
+            const rocket = document.createElement('div');
+            rocket.classList.add('firework-particle');
+            rocket.style.backgroundColor = color;
+            rocket.style.left = x + '%';
+            rocket.style.bottom = '0';
+            rocket.style.width = '8px';
+            rocket.style.height = '15px';
+            rocket.style.borderRadius = '50% 50% 0 0';
+            rocket.style.transition = 'bottom 1s ease-out, opacity 0.5s';
+            container.appendChild(rocket);
+            setTimeout(() => { rocket.style.bottom = '70%'; }, 50);
+            setTimeout(() => {
+                rocket.style.opacity = '0';
+                createExplosion(container, x, 70, color);
+                setTimeout(() => rocket.remove(), 1000);
+            }, 1000);
+        }
+
+        function createExplosion(container, x, y, color) {
+            for(let i=0; i<30; i++) {
+                const p = document.createElement('div');
+                p.classList.add('firework-particle');
+                p.style.backgroundColor = color;
+                p.style.left = x + '%';
+                p.style.bottom = y + '%';
+                p.style.width = '6px';
+                p.style.height = '6px';
+                container.appendChild(p);
+                const angle = Math.random() * Math.PI * 2;
+                const velocity = Math.random() * 150 + 50; 
+                const tx = Math.cos(angle) * velocity;
+                const ty = Math.sin(angle) * velocity;
+                const anim = p.animate([
+                    { transform: 'translate(0, 0) scale(1)', opacity: 1 },
+                    { transform: `translate(${tx}px, ${-ty}px) scale(0)`, opacity: 0 } 
+                ], { duration: 1000 + Math.random() * 500, easing: 'cubic-bezier(0, .9, .57, 1)' });
+                anim.onfinish = () => p.remove();
+            }
+        }
+
+        // --- EFECTOS DE TEXTO Y FONDO ---
+        function typeText(text, element, speed) {
+            let i = 0;
+            element.innerHTML = "";
+            function type() {
+                if (i < text.length) {
+                    element.innerHTML += text.charAt(i);
+                    i++;
+                    setTimeout(type, speed);
+                }
+            }
+            type();
+        }
+
+        function createStars() {
+            const scene2 = document.getElementById('scene-2');
+            for (let i = 0; i < 60; i++) {
+                const star = document.createElement('div');
+                star.classList.add('star');
+                const x = Math.random() * 100;
+                const y = Math.random() * 80;
+                const size = Math.random() * 3 + 1;
+                const duration = Math.random() * 3 + 2; 
+                star.style.left = x + '%';
+                star.style.top = y + '%';
+                star.style.width = size + 'px';
+                star.style.height = size + 'px';
+                star.style.setProperty('--duration', duration + 's');
+                scene2.appendChild(star);
+            }
+        }
+
+        // --- MODAL POPUP ---
+        const modalOverlay = document.getElementById('modalOverlay');
+        const modalText = document.getElementById('modalText');
+        function showMessage(id) {
+            modalText.textContent = messages[id];
+            modalOverlay.classList.add('active');
+        }
+        function closeModalBtn() { modalOverlay.classList.remove('active'); }
+        function closeModal(event) { if (event.target === modalOverlay) modalOverlay.classList.remove('active'); }
+
+        // --- INICIALIZACIÓN ---
+        window.onload = createSnow;
+    </script>
+</body>
+</html>
